@@ -1,5 +1,5 @@
 
-def prepare_dataframe_tri(df):
+def prepare_dataframe_tris(df):
     """
     Returns filtered version, with columns of interest and data transformations (if necessary).
     """

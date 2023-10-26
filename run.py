@@ -3,7 +3,7 @@ import json
 
 import pandas as pd
 
-from utils import prepare_dataframe_tri, prepare_dataframe_melate_retro, get_probability_of_numbers_per_column
+from utils import prepare_dataframe_tris, prepare_dataframe_melate_retro, get_probability_of_numbers_per_column
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Process and analyze datasets from Mexico Lottery services.")
@@ -11,7 +11,7 @@ if __name__ == "__main__":
                         choices=['tris', 'melate_retro'], )
     args = parser.parse_args()
     if args.type and args.type == 'tris':
-        df = prepare_dataframe_tri(pd.read_csv('datasets/Tris.csv'))
+        df = prepare_dataframe_tris(pd.read_csv('datasets/Tris.csv'))
         del df['FECHA']
         print(json.dumps(get_probability_of_numbers_per_column(df), indent=2, default=int))
     if args.type and args.type == 'melate_retro':
