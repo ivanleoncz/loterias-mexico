@@ -3,16 +3,17 @@ def prepare_dataframe_tris(df):
     """
     Returns filtered version, with columns of interest and data transformations (if necessary).
     """
-    df.rename(columns={"R1": "C1", "R2": "C2", "R3": "C3", "R4": "C4", "R5": "C5", })
-    return df[['R1', 'R2', 'R3', 'R4', 'R5', 'FECHA']]
+    df.rename(columns={"R1": "C1", "R2": "C2", "R3": "C3", "R4": "C4", "R5": "C5", }, inplace=True)
+    return df[['C1', 'C2', 'C3', 'C4', 'C5', 'FECHA']]
 
 
 def prepare_dataframe_melate_retro(df):
     """
     Returns filtered version, with columns of interest and data transformations (if necessary).
     """
-    df.rename(columns={"F1": "C1", "F2": "C2", "F3": "C3", "F4": "C4", "F5": "C5", "F6": "C6", "F7": "C7", })
-    return df[['F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'BOLSA', 'FECHA']]
+    df.rename(columns={"F1": "C1", "F2": "C2", "F3": "C3", "F4": "C4", "F5": "C5", "F6": "C6", "F7": "C7", },
+              inplace=True)
+    return df[['C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'BOLSA', 'FECHA']]
 
 
 def filter_dataframe_by_year(df, year="2023"):
