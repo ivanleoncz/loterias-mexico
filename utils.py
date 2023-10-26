@@ -22,13 +22,14 @@ def filter_dataframe_by_year(df, year="2023"):
     return df.loc[df["FECHA"].str.contains(str(year))]
 
 
-def get_probability_of_numbers_per_column(df) -> dict:
-
+def get_numbers_probability_per_column(df) -> dict:
+    """
+    Count the draws of a number per column and the percentage which it corresponds, based on all lottery draws.
+    """
     columns = dict()
+    df_size = len(df)
 
     for column in df.columns:
-        columns[column] = dict(df[column].value_counts())
+        columns[column] = {k: [v, (int(v) * 100) / df_size] for k, v in dict(df[column].value_counts()).items()}
 
     return columns
-
-
