@@ -1,8 +1,19 @@
+from pandas import to_datetime
+
+
+def convert_date_columns(df):
+    """
+    Convert date in string formats into actual Pandas date objects.
+    """
+    df["FECHA"] = to_datetime(df["FECHA"], dayfirst=True)
+    return df
+
 
 def prepare_dataframe_tris(df):
     """
     Returns filtered version, with columns of interest and data transformations (if necessary).
     """
+    df = convert_date_columns(df)
     df.rename(columns={"R1": "C1", "R2": "C2", "R3": "C3", "R4": "C4", "R5": "C5", }, inplace=True)
     return df[['C1', 'C2', 'C3', 'C4', 'C5', 'FECHA']]
 
@@ -11,16 +22,17 @@ def prepare_dataframe_melate_retro(df):
     """
     Returns filtered version, with columns of interest and data transformations (if necessary).
     """
+    df = convert_date_columns(df)
     df.rename(columns={"F1": "C1", "F2": "C2", "F3": "C3", "F4": "C4", "F5": "C5", "F6": "C6", "F7": "C7", },
               inplace=True)
     return df[['C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'BOLSA', 'FECHA']]
 
 
-def filter_dataframe_by_year(df, year="2023"):
+def filter_dataframe_by_year(df, year: str = "2023"):
     """
     Returns dataset filtered by year.
     """
-    return df.loc[df["FECHA"].str.contains(str(year))]
+    return df.loc[df["FECHA"] >= f"{year}-01-01"]
 
 
 def get_numbers_probability_per_column(df) -> dict:
