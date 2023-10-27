@@ -30,7 +30,18 @@ def get_numbers_probability_per_column(df) -> dict:
     columns = dict()
     df_size = len(df)
 
-    for column in df.columns:
+    for column in [c for c in df.columns if len(c) == 2]:
         columns[column] = {k: [v, (int(v) * 100) / df_size] for k, v in dict(df[column].value_counts()).items()}
 
     return columns
+
+
+def get_numbers_probability(df) -> dict:
+    """
+    Calculates probability of a number globally, not strict to a column, performing incremental sums of value_counts
+    series of each column.
+    """
+    numbers = df['C1'].value_counts()  # initializing Series of number counters with the 1st column
+    for column in [c for c in df.columns if len(c) == 2][1:]:
+        numbers += df[column]
+    return dict(numbers)
