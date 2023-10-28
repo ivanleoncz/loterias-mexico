@@ -1,3 +1,4 @@
+import matplotlib.pyplot as plt
 from pandas import to_datetime
 
 
@@ -35,7 +36,7 @@ def filter_dataframe_by_year(df, year: str = "2023"):
     return df.loc[df["FECHA"] >= f"{year}-01-01"]
 
 
-def get_numbers_probability_per_column(df) -> dict:
+def get_numbers_probability_per_column(df, with_percentages=False) -> dict:
     """
     Count the draws of a number per column and the percentage which it corresponds, based on all lottery draws.
     """
@@ -43,7 +44,11 @@ def get_numbers_probability_per_column(df) -> dict:
     df_size = len(df)
 
     for column in [c for c in df.columns if len(c) == 2]:
-        columns[column] = {k: [v, (int(v) * 100) / df_size] for k, v in dict(df[column].value_counts()).items()}
+        numbers_and_draws = dict(df[column].value_counts()).items()
+        if with_percentages:
+            columns[column] = {int(k): [v, (int(v) * 100) / df_size] for k, v in numbers_and_draws}
+        else:
+            columns[column] = {int(k): v for k, v in numbers_and_draws}
 
     return columns
 
@@ -57,3 +62,20 @@ def get_numbers_probability(df) -> dict:
     for column in [c for c in df.columns if len(c) == 2][1:]:
         numbers += df[column]
     return dict(numbers)
+
+
+def plot_probabilities(ds: dict, lottery=None):
+    """
+    Plotting bar chars of probabilities of each number per column.
+    """
+    base_title = "Probability of Drawn Numbers per Column"
+    title = f'{base_title} on "{lottery}" lottery' if lottery else base_title
+    fig, axes = plt.subplots(nrows=len(ds.keys()), ncols=1, figsize=(10, 10))
+    axis = 0
+    for col in ds:
+        axes[axis].bar(ds[col].keys(), ds[col].values())
+        axis += 1
+    fig.suptitle(title)
+    plt.subplots_adjust(hspace=0.3)
+    plt.setp(axes, xticks=range(1, 40) if "Melate" in lottery else range(10))
+    plt.show()
