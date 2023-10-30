@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+from numpy import nan
 from pandas import to_datetime
 
 
@@ -10,11 +11,22 @@ def convert_date_columns(df):
     return df
 
 
+def convert_to_int64(df):
+    """
+    Convert Nan (not-a-number) and Float64 types (if any) to int64.
+    """
+    for col in df.columns:
+        df[col] = df[col].replace(nan, -1)
+        if df[col].dtypes == 'float64':
+            df[col] = df[col].astype('int64')
+    return df
+
+
 def prepare_dataframe_tris(df):
     """
     Returns filtered version, with columns of interest and data transformations (if necessary).
     """
-    df = convert_date_columns(df)
+    df = convert_to_int64(convert_date_columns(df))
     df.rename(columns={"R1": "C1", "R2": "C2", "R3": "C3", "R4": "C4", "R5": "C5", }, inplace=True)
     return df[['C1', 'C2', 'C3', 'C4', 'C5', 'FECHA']]
 
