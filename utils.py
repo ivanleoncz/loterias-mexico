@@ -40,7 +40,7 @@ def join_columns_of_drawn_numbers(df):
     Merge columns of drawn numbers and add the result in another column
     """
     cols = get_columns_of_drawn_numbers(df)
-    df.assign(NUMERO=df[cols].astype('str').agg(''.join, axis=1))
+    df = df.assign(NUMERO=df[cols].astype('str').agg(''.join, axis=1))
     return df
 
 
