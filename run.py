@@ -35,7 +35,7 @@ if __name__ == "__main__":
             if args.plot:
                 plot_probabilities(ds=data, lottery="TRIS " + args.year if args.year else "")
 
-            if args.last_numbers:
+            if args.last_drawn_numbers:
                 print(join_columns_of_drawn_numbers(df.head(10)))
 
         if args.type == 'melate_retro':
@@ -52,5 +52,5 @@ if __name__ == "__main__":
             if args.plot:
                 plot_probabilities(ds=data, lottery="Melate Retro " + args.year if args.year else "")
 
-            if args.last_numbers:
+            if args.last_drawn_numbers:
                 print(join_columns_of_drawn_numbers(df.head(10)))
