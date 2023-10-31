@@ -31,16 +31,29 @@ def prepare_dataframe_tris(df):
     return df[['C1', 'C2', 'C3', 'C4', 'C5', 'FECHA']]
 
 
-def get_columns_of_drawn_numbers(df):
-    return [c for c in df.columns if c.startswith('C')]
+def get_columns_of_drawn_numbers(df, columns_filter: str = None) -> list:
+    cols = [col for col in df.columns if col.startswith('C')]
+    if columns_filter == "starting_pair":
+        cols = df.columns[:2]
+    elif columns_filter == "first_three":
+        cols = df.columns[:3]
+    elif columns_filter == "first_four":
+        cols = df.columns[:4]
+    elif columns_filter == "last_four":
+        cols = df.columns[-4:]
+    elif columns_filter == "last_three":
+        cols = df.columns[-3:]
+    elif columns_filter == "ending_pair":
+        cols = df.columns[-2:]
+    return cols
 
 
-def join_columns_of_drawn_numbers(df):
+def join_drawn_numbers(df, columns_filter):
     """
-    Merge columns of drawn numbers and add the result in another column
+    Merge columns of drawn numbers.
     """
-    cols = get_columns_of_drawn_numbers(df)
-    return df.assign(NUMERO=df[cols].astype('str').agg(''.join, axis=1))
+    cols = get_columns_of_drawn_numbers(df, columns_filter)
+    return dict(df[cols].astype('str').agg(''.join, axis=1).value_counts())
 
 
 def prepare_dataframe_melate_retro(df):

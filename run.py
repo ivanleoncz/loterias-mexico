@@ -5,7 +5,7 @@ import pandas as pd
 
 from utils import (prepare_dataframe_tris, prepare_dataframe_melate_retro, filter_dataframe_by_year,
                    get_numbers_probability_per_column, get_numbers_probability, plot_probabilities,
-                   join_columns_of_drawn_numbers)
+                   join_drawn_numbers)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Process and analyze datasets from Mexico Lottery services.")
@@ -16,7 +16,9 @@ if __name__ == "__main__":
                         action='store_true')
     parser.add_argument('--plot', '-p', help="plot results into Matplotlib chart",
                         action='store_true')
-    parser.add_argument('--last_drawn_numbers', '-l', help="list the last 10 numbers", action='store_true')
+    parser.add_argument('--combination', '-c', help="counts the number of drawns for some combinations",
+                        choices=['starting_pair', 'first_three', 'first_four', 'last_four', 'last_three',
+                                 'ending_pair'])
     args = parser.parse_args()
 
     if args.type:
@@ -35,8 +37,8 @@ if __name__ == "__main__":
             if args.plot:
                 plot_probabilities(ds=data, lottery="TRIS " + args.year if args.year else "")
 
-            if args.last_drawn_numbers:
-                print(join_columns_of_drawn_numbers(df.head(10)))
+            if args.combination:
+                print(join_drawn_numbers(df, columns_filter=args.combination))
 
         if args.type == 'melate_retro':
 
@@ -52,5 +54,5 @@ if __name__ == "__main__":
             if args.plot:
                 plot_probabilities(ds=data, lottery="Melate Retro " + args.year if args.year else "")
 
-            if args.last_drawn_numbers:
-                print(join_columns_of_drawn_numbers(df.head(10)))
+            if args.combination:
+                print(join_drawn_numbers(df, columns_filter=args.combination))
