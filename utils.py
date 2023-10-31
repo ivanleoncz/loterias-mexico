@@ -31,6 +31,19 @@ def prepare_dataframe_tris(df):
     return df[['C1', 'C2', 'C3', 'C4', 'C5', 'FECHA']]
 
 
+def get_columns_of_drawn_numbers(df):
+    return [c for c in df.columns if c.startswith('C')]
+
+
+def join_columns_of_drawn_numbers(df):
+    """
+    Merge columns of drawn numbers and add the result in another column
+    """
+    cols = get_columns_of_drawn_numbers(df)
+    df.assign(NUMERO=df[cols].astype('str').agg(''.join, axis=1))
+    return df
+
+
 def prepare_dataframe_melate_retro(df):
     """
     Returns filtered version, with columns of interest and data transformations (if necessary).
