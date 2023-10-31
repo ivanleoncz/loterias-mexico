@@ -34,18 +34,17 @@ def prepare_dataframe_tris(df):
 def get_columns_of_drawn_numbers(df, columns_filter: str = None) -> list:
     cols = [col for col in df.columns if col.startswith('C')]
     if columns_filter == "starting_pair":
-        cols = df.columns[:2]
+        return cols[:2]
     elif columns_filter == "first_three":
-        cols = df.columns[:3]
+        return cols[:3]
     elif columns_filter == "first_four":
-        cols = df.columns[:4]
+        return cols[:4]
     elif columns_filter == "last_four":
-        cols = df.columns[-4:]
+        return cols[-4:]
     elif columns_filter == "last_three":
-        cols = df.columns[-3:]
+        return cols[-3:]
     elif columns_filter == "ending_pair":
-        cols = df.columns[-2:]
-    return cols
+        return cols[-2:]
 
 
 def join_drawn_numbers(df, columns_filter):
