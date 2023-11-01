@@ -33,7 +33,17 @@ def prepare_dataframe_tris(df):
 
 def get_columns_of_drawn_numbers(df, columns_filter: str = None) -> list:
     cols = [col for col in df.columns if col.startswith('C')]
-    if columns_filter == "starting_pair":
+    if columns_filter == "first":
+        return [cols[0]]
+    elif columns_filter == "second":
+        return [cols[1]]
+    elif columns_filter == "third":
+        return [cols[2]]
+    elif columns_filter == "fourth":
+        return [cols[3]]
+    elif columns_filter == "fifth":
+        return [cols[4]]
+    elif columns_filter == "starting_pair":
         return cols[:2]
     elif columns_filter == "first_three":
         return cols[:3]
@@ -45,14 +55,20 @@ def get_columns_of_drawn_numbers(df, columns_filter: str = None) -> list:
         return cols[-3:]
     elif columns_filter == "ending_pair":
         return cols[-2:]
+    elif columns_filter == "first_last":
+        return [cols[0], cols[-1]]
+    elif columns_filter == "second_penultimate":
+        return [cols[1], cols[-2]]
+    else:
+        return cols
 
 
-def join_drawn_numbers(df, columns_filter):
+def count_drawn_numbers(df, columns_filter=None):
     """
-    Merge columns of drawn numbers.
+    Merge columns of selected drawn numbers and count their drawns.
     """
     cols = get_columns_of_drawn_numbers(df, columns_filter)
-    return dict(df[cols].astype('str').agg(''.join, axis=1).value_counts())
+    return dict(df[cols].astype('str').agg(''.join, axis=1).value_counts().sort_index())
 
 
 def prepare_dataframe_melate_retro(df):
@@ -89,7 +105,7 @@ def get_numbers_probability_per_column(df, with_percentages=False) -> dict:
     return columns
 
 
-def get_numbers_probability(df) -> dict:
+def get_numbers_probability_in_all_columns(df) -> dict:
     """
     Calculates probability of a number globally, not strict to a column, performing incremental sums of value_counts
     series of each column.
