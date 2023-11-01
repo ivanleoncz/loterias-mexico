@@ -4,8 +4,8 @@ import json
 import pandas as pd
 
 from utils import (prepare_dataframe_tris, prepare_dataframe_melate_retro, filter_dataframe_by_year,
-                   get_numbers_probability_per_column, get_numbers_probability, plot_probabilities,
-                   join_drawn_numbers)
+                   get_numbers_probability_per_column, get_numbers_probability_in_all_columns, plot_probabilities,
+                   count_drawn_numbers)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Process and analyze datasets from Mexico Lottery services.")
@@ -16,43 +16,39 @@ if __name__ == "__main__":
                         action='store_true')
     parser.add_argument('--plot', '-p', help="plot results into Matplotlib chart",
                         action='store_true')
-    parser.add_argument('--combination', '-c', help="counts the number of drawns for some combinations",
-                        choices=['starting_pair', 'first_three', 'first_four', 'last_four', 'last_three',
-                                 'ending_pair'])
+    parser.add_argument('--list', '-l', help="list and count drawn numbers without any combination",
+                        action='store_true')
+    parser.add_argument('--combination', '-c', help="list and count drawn numbers based on combinations",
+                        choices=['first', 'second', 'third', 'fourth', 'fifth', 'starting_pair', 'first_three',
+                                 'first_four', 'last_four', 'last_three', 'ending_pair', 'first_last',
+                                 'second_penultimate'])
     args = parser.parse_args()
 
     if args.type:
 
+        df = None
         if args.type == 'tris':
-
             df = prepare_dataframe_tris(pd.read_csv('datasets/Tris.csv'))
-            if args.year:
-                df = filter_dataframe_by_year(df, year=args.year)
-
-            if args.all_columns:
-                data = get_numbers_probability(df)
-            else:
-                data = get_numbers_probability_per_column(df)
-
-            if args.plot:
-                plot_probabilities(ds=data, lottery="TRIS " + args.year if args.year else "")
-
-            if args.combination:
-                print(join_drawn_numbers(df, columns_filter=args.combination))
-
-        if args.type == 'melate_retro':
-
+        elif args.type == 'melate_retro':
             df = prepare_dataframe_melate_retro(pd.read_csv('datasets/Melate-Retro.csv'))
-            if args.year:
-                df = filter_dataframe_by_year(df, year=args.year)
 
-            if args.all_columns:
-                data = get_numbers_probability(df)
-            else:
-                data = get_numbers_probability_per_column(df)
+        if args.year:
+            df = filter_dataframe_by_year(df, year=args.year)
 
+        if args.all_columns:
+            print(json.dumps(get_numbers_probability_in_all_columns(df), indent=2))
+        else:
+            data = get_numbers_probability_per_column(df)
+
+            # Data presentation
             if args.plot:
-                plot_probabilities(ds=data, lottery="Melate Retro " + args.year if args.year else "")
-
-            if args.combination:
-                print(join_drawn_numbers(df, columns_filter=args.combination))
+                if args.type == 'tris':
+                    plot_probabilities(ds=data, lottery="TRIS " + args.year if args.year else "")
+                elif args.type == 'melate_retro':
+                    plot_probabilities(ds=data, lottery="Melate Retro " + args.year if args.year else "")
+            elif args.list:
+                print(json.dumps(count_drawn_numbers(df), indent=2, default=int))
+            elif args.combination:
+                print(json.dumps(count_drawn_numbers(df, columns_filter=args.combination), indent=2, default=int))
+            else:
+                print(df.head(10))
