@@ -92,15 +92,12 @@ def select_columns_of_winning_numbers(df, combination: str) -> list:
         return cols
 
 
-def count_winning_numbers(df, combination=None, sort_by_number: bool = False) -> dict:
+def count_winning_numbers(df, combination=None) -> dict:
     """
     Merge columns of winning numbers and count how many times they were drawn.
     """
     cols = select_columns_of_winning_numbers(df, combination)
-    df = df[cols].astype('str').agg(''.join, axis=1).value_counts()
-    if sort_by_number:
-        return dict(df.sort_values())
-    return dict(df)
+    return dict(df[cols].astype('str').agg(''.join, axis=1).value_counts())
 
 
 def get_probability_of_numbers_per_column(df, with_percentages=False) -> dict:

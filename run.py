@@ -50,16 +50,8 @@ if __name__ == "__main__":
                 elif args.type == 'melate_retro':
                     plot_probabilities(ds=data, lottery="Melate Retro " + args.year if args.year else "")
             elif args.list:
-                if args.sort_numbers:
-                    result = count_winning_numbers(df, sort_by_number=True)
-                else:
-                    result = count_winning_numbers(df)
-                print(json.dumps(result, indent=2, default=int))
+                print(json.dumps(count_winning_numbers(df), indent=2, default=int))
             elif args.combination:
-                if args.sort_numbers:
-                    result = count_winning_numbers(df, combination=args.combination, sort_by_number=True)
-                else:
-                    result = count_winning_numbers(df, combination=args.combination)
-                print(json.dumps(result, indent=2, default=int))
+                print(json.dumps(count_winning_numbers(df, combination=args.combination), indent=2, default=int))
             else:
                 print(df.head(10))
