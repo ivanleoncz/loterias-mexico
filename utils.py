@@ -63,12 +63,15 @@ def get_columns_of_drawn_numbers(df, columns_filter: str = None) -> list:
         return cols
 
 
-def count_drawn_numbers(df, columns_filter=None):
+def count_drawn_numbers(df, columns_filter=None, sort_by_number: bool = False) -> dict:
     """
     Merge columns of selected drawn numbers and count their drawns.
     """
     cols = get_columns_of_drawn_numbers(df, columns_filter)
-    return dict(df[cols].astype('str').agg(''.join, axis=1).value_counts().sort_index())
+    df = df[cols].astype('str').agg(''.join, axis=1).value_counts()
+    if sort_by_number:
+        return dict(df.sort_values())
+    return dict(df)
 
 
 def prepare_dataframe_melate_retro(df):
@@ -85,7 +88,7 @@ def filter_dataframe_by_year(df, year: str = "2023"):
     """
     Returns dataset filtered by year.
     """
-    return df.loc[df["FECHA"] >= f"{year}-01-01"]
+    return df.loc[(df["FECHA"] < f"{str(int(year) + 1)}-01-01") & (df["FECHA"] >= f"{year}-01-01")]
 
 
 def get_numbers_probability_per_column(df, with_percentages=False) -> dict:

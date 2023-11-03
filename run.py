@@ -22,6 +22,8 @@ if __name__ == "__main__":
                         choices=['first', 'second', 'third', 'fourth', 'fifth', 'starting_pair', 'first_three',
                                  'first_four', 'last_four', 'last_three', 'ending_pair', 'first_last',
                                  'second_penultimate'])
+    parser.add_argument('--sort_numbers', '-s',
+                        help="sort --list and --combination results by drawn number", action="store_true")
     args = parser.parse_args()
 
     if args.type:
@@ -47,8 +49,16 @@ if __name__ == "__main__":
                 elif args.type == 'melate_retro':
                     plot_probabilities(ds=data, lottery="Melate Retro " + args.year if args.year else "")
             elif args.list:
-                print(json.dumps(count_drawn_numbers(df), indent=2, default=int))
+                if args.sort_numbers:
+                    result = count_drawn_numbers(df, sort_by_number=True)
+                else:
+                    result = count_drawn_numbers(df)
+                print(json.dumps(result, indent=2, default=int))
             elif args.combination:
-                print(json.dumps(count_drawn_numbers(df, columns_filter=args.combination), indent=2, default=int))
+                if args.sort_numbers:
+                    result = count_drawn_numbers(df, columns_filter=args.combination, sort_by_number=True)
+                else:
+                    result = count_drawn_numbers(df, columns_filter=args.combination)
+                print(json.dumps(result, indent=2, default=int))
             else:
                 print(df.head(10))
