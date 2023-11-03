@@ -3,7 +3,7 @@ from numpy import nan
 from pandas import to_datetime
 
 
-def convert_date_columns(df):
+def convert_date_column(df):
     """
     Convert date in string formats into actual Pandas date objects.
     """
@@ -24,15 +24,23 @@ def convert_to_int64(df):
 
 def prepare_dataframe_tris(df):
     """
-    Returns filtered version, with columns of interest and data transformations (if necessary).
+    Returns filtered version, with columns of interest (renaming) and data transformations (if necessary).
     """
-    df = convert_to_int64(convert_date_columns(df))
+    df = convert_to_int64(convert_date_column(df))
     df.rename(columns={"R1": "C1", "R2": "C2", "R3": "C3", "R4": "C4", "R5": "C5", }, inplace=True)
     return df[['C1', 'C2', 'C3', 'C4', 'C5', 'FECHA']]
 
 
-def get_columns_of_drawn_numbers(df, columns_filter: str = None) -> list:
-    cols = [col for col in df.columns if col.startswith('C')]
+def get_columns_of_drawn_numbers(df) -> list:
+    """
+    Returns a list of columns which contain drawn numbers.
+    It depends on the execution of prepare_dataframe functions.
+    """
+    return [col for col in df.columns if col.startswith('C')]
+
+
+def filter_columns_of_drawn_numbers(df, columns_filter: str = None) -> list:
+    cols = get_columns_of_drawn_numbers(df)
     if columns_filter == "first":
         return [cols[0]]
     elif columns_filter == "second":
@@ -67,7 +75,7 @@ def count_drawn_numbers(df, columns_filter=None, sort_by_number: bool = False) -
     """
     Merge columns of selected drawn numbers and count their drawns.
     """
-    cols = get_columns_of_drawn_numbers(df, columns_filter)
+    cols = filter_columns_of_drawn_numbers(df, columns_filter)
     df = df[cols].astype('str').agg(''.join, axis=1).value_counts()
     if sort_by_number:
         return dict(df.sort_values())
@@ -78,7 +86,7 @@ def prepare_dataframe_melate_retro(df):
     """
     Returns filtered version, with columns of interest and data transformations (if necessary).
     """
-    df = convert_date_columns(df)
+    df = convert_date_column(df)
     df.rename(columns={"F1": "C1", "F2": "C2", "F3": "C3", "F4": "C4", "F5": "C5", "F6": "C6", "F7": "C7", },
               inplace=True)
     return df[['C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'BOLSA', 'FECHA']]
@@ -98,7 +106,7 @@ def get_numbers_probability_per_column(df, with_percentages=False) -> dict:
     columns = dict()
     df_size = len(df)
 
-    for column in [c for c in df.columns if len(c) == 2]:
+    for column in filter_columns_of_drawn_numbers(df):
         numbers_and_draws = dict(df[column].value_counts()).items()
         if with_percentages:
             columns[column] = {int(k): [v, (int(v) * 100) / df_size] for k, v in numbers_and_draws}
@@ -114,7 +122,7 @@ def get_numbers_probability_in_all_columns(df) -> dict:
     series of each column.
     """
     numbers = df['C1'].value_counts()  # initializing Series of number counters with the 1st column
-    for column in [c for c in df.columns if len(c) == 2][1:]:
+    for column in filter_columns_of_drawn_numbers(df)[1:]:
         numbers += df[column]
     return dict(numbers)
 
