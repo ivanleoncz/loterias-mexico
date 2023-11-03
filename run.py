@@ -23,8 +23,6 @@ if __name__ == "__main__":
                         choices=['first', 'second', 'third', 'fourth', 'fifth', 'starting_pair', 'first_three',
                                  'first_four', 'last_four', 'last_three', 'ending_pair', 'first_last',
                                  'second_penultimate'])
-    parser.add_argument('--sort_numbers', '-s',
-                        help="sort --list and --combination results by drawn number", action="store_true")
     args = parser.parse_args()
 
     if args.type:
