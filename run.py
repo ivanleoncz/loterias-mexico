@@ -4,8 +4,8 @@ import json
 import pandas as pd
 
 from utils import (prepare_dataframe_tris, prepare_dataframe_melate_retro, filter_dataframe_by_year,
-                   get_numbers_probability_per_column, get_numbers_probability_in_all_columns, plot_probabilities,
-                   count_drawn_numbers)
+                   get_probability_of_numbers_per_column, get_probability_of_numbers_in_all_columns, plot_probabilities,
+                   count_winning_numbers)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Process and analyze datasets from Mexico Lottery services.")
@@ -16,9 +16,10 @@ if __name__ == "__main__":
                         action='store_true')
     parser.add_argument('--plot', '-p', help="plot results into Matplotlib chart",
                         action='store_true')
-    parser.add_argument('--list', '-l', help="list and count drawn numbers without any combination",
+    parser.add_argument('--list', '-l', help="count and list winning numbers",
                         action='store_true')
-    parser.add_argument('--combination', '-c', help="list and count drawn numbers based on combinations",
+    parser.add_argument('--combination', '-c',
+                        help="count and list winning numbers based on combination of columns",
                         choices=['first', 'second', 'third', 'fourth', 'fifth', 'starting_pair', 'first_three',
                                  'first_four', 'last_four', 'last_three', 'ending_pair', 'first_last',
                                  'second_penultimate'])
@@ -38,9 +39,9 @@ if __name__ == "__main__":
             df = filter_dataframe_by_year(df, year=args.year)
 
         if args.all_columns:
-            print(json.dumps(get_numbers_probability_in_all_columns(df), indent=2))
+            print(json.dumps(get_probability_of_numbers_in_all_columns(df), indent=2))
         else:
-            data = get_numbers_probability_per_column(df)
+            data = get_probability_of_numbers_per_column(df)
 
             # Data presentation
             if args.plot:
@@ -50,15 +51,15 @@ if __name__ == "__main__":
                     plot_probabilities(ds=data, lottery="Melate Retro " + args.year if args.year else "")
             elif args.list:
                 if args.sort_numbers:
-                    result = count_drawn_numbers(df, sort_by_number=True)
+                    result = count_winning_numbers(df, sort_by_number=True)
                 else:
-                    result = count_drawn_numbers(df)
+                    result = count_winning_numbers(df)
                 print(json.dumps(result, indent=2, default=int))
             elif args.combination:
                 if args.sort_numbers:
-                    result = count_drawn_numbers(df, columns_filter=args.combination, sort_by_number=True)
+                    result = count_winning_numbers(df, combination=args.combination, sort_by_number=True)
                 else:
-                    result = count_drawn_numbers(df, columns_filter=args.combination)
+                    result = count_winning_numbers(df, combination=args.combination)
                 print(json.dumps(result, indent=2, default=int))
             else:
                 print(df.head(10))
