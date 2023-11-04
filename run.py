@@ -1,6 +1,7 @@
 import argparse
 import json
 
+from dotenv import load_dotenv
 import pandas as pd
 
 from utils import (prepare_dataframe_tris, prepare_dataframe_melate_retro, filter_dataframe_by_year,
@@ -8,6 +9,7 @@ from utils import (prepare_dataframe_tris, prepare_dataframe_melate_retro, filte
                    count_winning_numbers)
 
 if __name__ == "__main__":
+    load_dotenv()
     parser = argparse.ArgumentParser(description="Process and analyze datasets from Mexico Lottery services.")
     parser.add_argument('--type', '-t', help="name of the lottery service", required=True,
                         choices=['tris', 'melate_retro'], )
