@@ -1,9 +1,11 @@
 import argparse
 import json
+import os
 
 from dotenv import load_dotenv
 import pandas as pd
 
+from scraping import download_dataset
 from utils import (prepare_dataframe_tris, prepare_dataframe_melate_retro, filter_dataframe_by_year,
                    get_probability_of_numbers_per_column, get_probability_of_numbers_in_all_columns, plot_probabilities,
                    count_winning_numbers)
@@ -25,33 +27,41 @@ if __name__ == "__main__":
                         choices=['first', 'second', 'third', 'fourth', 'fifth', 'starting_pair', 'first_three',
                                  'first_four', 'last_four', 'last_three', 'ending_pair', 'first_last',
                                  'second_penultimate'])
+    parser.add_argument('--download', '-d', help="download dataset from Mexico's Loteria Nacional",
+                        action='store_true')
     args = parser.parse_args()
 
     if args.type:
 
-        df = None
-        if args.type == 'tris':
-            df = prepare_dataframe_tris(pd.read_csv('datasets/Tris.csv'))
-        elif args.type == 'melate_retro':
-            df = prepare_dataframe_melate_retro(pd.read_csv('datasets/Melate-Retro.csv'))
-
-        if args.year:
-            df = filter_dataframe_by_year(df, year=args.year)
-
-        if args.all_columns:
-            print(json.dumps(get_probability_of_numbers_in_all_columns(df), indent=2))
+        if args.download:
+            if args.type == 'tris':
+                download_dataset(os.environ["LOTERIA_NACIONAL_URL_TRIS"])
+            elif args.type == 'melate_retro':
+                download_dataset(os.environ["LOTERIA_NACIONAL_URL_MELATE_RETRO"])
         else:
-            data = get_probability_of_numbers_per_column(df)
+            df = None
+            if args.type == 'tris':
+                df = prepare_dataframe_tris(pd.read_csv('datasets/Tris.csv'))
+            elif args.type == 'melate_retro':
+                df = prepare_dataframe_melate_retro(pd.read_csv('datasets/Melate-Retro.csv'))
 
-            # Data presentation
-            if args.plot:
-                if args.type == 'tris':
-                    plot_probabilities(ds=data, lottery="TRIS " + args.year if args.year else "")
-                elif args.type == 'melate_retro':
-                    plot_probabilities(ds=data, lottery="Melate Retro " + args.year if args.year else "")
-            elif args.list:
-                print(json.dumps(count_winning_numbers(df), indent=2, default=int))
-            elif args.combination:
-                print(json.dumps(count_winning_numbers(df, combination=args.combination), indent=2, default=int))
+            if args.year:
+                df = filter_dataframe_by_year(df, year=args.year)
+
+            if args.all_columns:
+                print(json.dumps(get_probability_of_numbers_in_all_columns(df), indent=2))
             else:
-                print(df.head(10))
+                data = get_probability_of_numbers_per_column(df)
+
+                # Data presentation
+                if args.plot:
+                    if args.type == 'tris':
+                        plot_probabilities(ds=data, lottery="TRIS " + args.year if args.year else "")
+                    elif args.type == 'melate_retro':
+                        plot_probabilities(ds=data, lottery="Melate Retro " + args.year if args.year else "")
+                elif args.list:
+                    print(json.dumps(count_winning_numbers(df), indent=2, default=int))
+                elif args.combination:
+                    print(json.dumps(count_winning_numbers(df, combination=args.combination), indent=2, default=int))
+                else:
+                    print(df.head(10))
