@@ -1,7 +1,20 @@
 import os
+import random
 
 from bs4 import BeautifulSoup
 import requests
+
+# List of UAs to be randomly used, in order to make the request more "legit" on the eyes of the webserver.
+USER_AGENTS = [
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/119.0",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 "
+    "Safari/537.36 Edg/113.0.1774.57",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.3"
+]
+
+headers = {
+    "User-Agent": random.choice(USER_AGENTS)
+}
 
 
 def get_dataset_url(request) -> str:
@@ -15,7 +28,7 @@ def get_dataset_url(request) -> str:
 
 
 def download_page_content(url):
-    request = requests.get(url, verify=False)
+    request = requests.get(url, headers=headers, verify=False)
     return request
 
 
@@ -30,7 +43,7 @@ def detect_lottery(content: str) -> str:
         return os.environ["DATASET_PATH_MELATE_RETRO"]
 
 
-def save_dataset(dataset : str) -> None:
+def save_dataset(dataset: str) -> None:
     """
     Saves dataset of lottery product.
     """
@@ -48,5 +61,5 @@ def download_dataset(url) -> None:
     """
     request = download_page_content(url)
     dataset_url = get_dataset_url(request)
-    dataset = requests.get(dataset_url, allow_redirects=True, verify=False)
+    dataset = requests.get(dataset_url, headers=headers, allow_redirects=True, verify=False)
     save_dataset(dataset.text)
