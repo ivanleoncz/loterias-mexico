@@ -25,14 +25,14 @@ def request_page_data(url):
     return request
 
 
-def get_dataset_url(request) -> str:
+def get_dataset_url(html_content: str) -> str:
     """
-    Obtains dataset URL from downloaded page.
+    Obtains URL for downloading dataset, from web page content .
     """
-    links = BeautifulSoup(request, 'html.parser').find_all('a')
-    url = [os.environ["LOTERIA_NACIONAL_URL"] + a["href"].split('..')[-1] for a in links
-           if os.environ["BUTTON_TEXT"] in a.get_text()]  # Transforming URL with double dot notation...
-    return url[0]
+    links = BeautifulSoup(html_content, 'html.parser').find_all('a')
+    url = [os.environ["LOTERIA_NACIONAL_URL"] + a["href"].split('..')[-1]  # Transforming URL with double dot notation.
+           for a in links if os.environ["BUTTON_TEXT"] in a.get_text()][0]
+    return url
 
 
 def detect_lottery(content: str) -> str:
