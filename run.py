@@ -35,9 +35,9 @@ if __name__ == "__main__":
 
         if args.download:
             if args.type == 'tris':
-                download_dataset(os.environ["LOTERIA_NACIONAL_URL_TRIS"])
+                download_dataset(os.environ["LOTERIA_NACIONAL_URL_TRIS"], args.type)
             elif args.type == 'melate_retro':
-                download_dataset(os.environ["LOTERIA_NACIONAL_URL_MELATE_RETRO"])
+                download_dataset(os.environ["LOTERIA_NACIONAL_URL_MELATE_RETRO"], args.type)
         else:
             df = None
             if args.type == 'tris':
