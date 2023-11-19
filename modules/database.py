@@ -1,5 +1,7 @@
-from os.path import abspath, dirname, join as path_join, split
+from os.path import join as path_join
 import sqlite3
+
+from .utils import BASE_DIR
 
 
 class Database:
@@ -8,13 +10,12 @@ class Database:
     __database_init = "init.sql"
 
     def __init__(self, database: str = __database_name):
-        self.base_dir = split(dirname(abspath(__file__)))[0]
-        self.db_path = path_join(self.base_dir, "databases", database)
+        self.db_path = path_join(BASE_DIR, "databases", database)
         self.con = sqlite3.connect(self.db_path)
         self.cur = self.con.cursor()
 
     def init_db(self) -> None:
-        init_file = path_join(self.base_dir, "databases", self.__database_init)
+        init_file = path_join(BASE_DIR, "databases", self.__database_init)
         with open(init_file, "r") as f:
             queries = f.read()
             self.cur.executescript(queries)

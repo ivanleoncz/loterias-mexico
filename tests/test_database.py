@@ -1,4 +1,7 @@
+import os
+
 from modules.database import Database
+from modules.utils import BASE_DIR
 
 
 class TestDatabase:
@@ -13,6 +16,7 @@ class TestDatabase:
     @classmethod
     def teardown_class(cls):
         cls.db.drop_db()
+        os.remove(os.path.join(BASE_DIR, "databases", cls.database))
 
     def test_init_db(self):
         self.__class__.db.init_db()
