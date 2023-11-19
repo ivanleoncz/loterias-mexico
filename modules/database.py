@@ -24,6 +24,7 @@ class Database:
         self.cur.executescript("""
         BEGIN TRANSACTION;
             DROP TABLE IF EXISTS lottery;
+            DROP TABLE IF EXISTS download_log;
             DROP TABLE IF EXISTS draw_schedule;
         END;
         """)

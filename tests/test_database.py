@@ -21,7 +21,7 @@ class TestDatabase:
     def test_init_db(self):
         self.__class__.db.init_db()
         result = self.__class__.db.cur.execute(""" SELECT name FROM sqlite_master; """)
-        assert len(result.fetchall()) == 2
+        assert len(result.fetchall()) == 3
 
     def test_drop_db(self):
         self.__class__.db.drop_db()
