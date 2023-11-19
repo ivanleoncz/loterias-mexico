@@ -1,5 +1,3 @@
-import os
-
 from modules.database import Database
 
 
