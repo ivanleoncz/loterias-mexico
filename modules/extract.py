@@ -1,9 +1,10 @@
-from datetime import datetime
 import os
 import random
 
 from bs4 import BeautifulSoup
 import requests
+
+from utils import detect_lottery_product
 
 # List of UAs to be randomly used, in order to make the request more "legit" on the eyes of the webserver.
 USER_AGENTS = [
@@ -17,9 +18,9 @@ headers = {
 }
 
 
-def request_page_data(url):
+def download_page(url : str) -> requests:
     """
-    Performs HTTP requests and returns request object.
+    Downloads the HTML page which contains the link for the dataset.
     """
     request = requests.get(url, headers=headers, verify=False)
     return request
@@ -35,26 +36,11 @@ def get_dataset_url(html_content: str) -> str:
     return url
 
 
-def detect_lottery(content: str) -> str:
-    """
-    Detect lottery product and return the filesystem path for the dataset.
-    """
-    product_number = content.split('\n')[1].split(',')[0]
-    if product_number == '60':
-        return os.environ["DATASET_PATH_TRIS"]
-    elif product_number == '30':
-        return os.environ["DATASET_PATH_MELATE_RETRO"]
-
-
-def generate_page_filename(product):
-    return "_".join((product, str(datetime.now().date()))) + ".html"
-
-
 def save_dataset(dataset: str) -> None:
     """
     Saves dataset of lottery product.
     """
-    with open(detect_lottery(dataset), 'w') as f:
+    with open(detect_lottery_product(dataset), 'w') as f:
         f.write(dataset)
 
 
@@ -67,7 +53,7 @@ def download_dataset(url, product) -> None:
     url : provided via argparse, available via .env file
     product : name of the lottery product to be processed
     """
-    request = request_page_data(url)
+    request = download_page(url)
     dataset_url = get_dataset_url(request.text)
     dataset = requests.get(dataset_url, headers=headers, allow_redirects=True, verify=False)
     save_dataset(dataset.text)
