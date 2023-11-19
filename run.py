@@ -5,10 +5,10 @@ import os
 from dotenv import load_dotenv
 import pandas as pd
 
-from scraping import download_dataset
-from utils import (prepare_dataframe_tris, prepare_dataframe_melate_retro, filter_dataframe_by_year,
-                   get_probability_of_numbers_per_column, get_probability_of_numbers_in_all_columns, plot_probabilities,
-                   count_winning_numbers)
+from modules.scraping import download_dataset
+from modules.data_processing import (prepare_dataframe_tris, prepare_dataframe_melate_retro, filter_dataframe_by_year,
+                                     get_probability_of_numbers_per_column, get_probability_of_numbers_in_all_columns,
+                                     plot_probabilities, count_winning_numbers)
 
 if __name__ == "__main__":
     load_dotenv()

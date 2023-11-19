@@ -1,9 +1,9 @@
 import os
 
-from database import Database
+from modules.database import Database
 
 
-class TestDatabase():
+class TestDatabase:
 
     db = None
     database = "tests.db"
@@ -15,12 +15,11 @@ class TestDatabase():
     @classmethod
     def teardown_class(cls):
         cls.db.drop_db()
-        os.remove(cls.database)
 
     def test_init_db(self):
         self.__class__.db.init_db()
         result = self.__class__.db.cur.execute(""" SELECT name FROM sqlite_master; """)
-        assert len(result.fetchall()) == 3
+        assert len(result.fetchall()) == 2
 
     def test_drop_db(self):
         self.__class__.db.drop_db()

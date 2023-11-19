@@ -50,16 +50,6 @@ def generate_page_filename(product):
     return "_".join((product, str(datetime.now().date()))) + ".html"
 
 
-def save_page(page: str, product: str) -> str:
-    """
-    Save the HTML content of the page which holds the link for the dataset.
-    """
-    filename = generate_page_filename(product)
-    with open(filename, 'w') as f:
-        f.write(page)
-    return filename
-
-
 def save_dataset(dataset: str) -> None:
     """
     Saves dataset of lottery product.
@@ -77,13 +67,7 @@ def download_dataset(url, product) -> None:
     url : provided via argparse, available via .env file
     product : name of the lottery product to be processed
     """
-    filename = generate_page_filename(product)
-    if os.path.exists(filename):
-        with open(filename, 'r') as f:
-            dataset_url = get_dataset_url(str(f.readlines()))
-    else:
-        request = request_page_data(url)
-        save_page(request.text, product)
-        dataset_url = get_dataset_url(request.text)
+    request = request_page_data(url)
+    dataset_url = get_dataset_url(request.text)
     dataset = requests.get(dataset_url, headers=headers, allow_redirects=True, verify=False)
     save_dataset(dataset.text)
