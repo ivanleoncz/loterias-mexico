@@ -15,8 +15,10 @@ BEGIN TRANSACTION;
         id INTEGER PRIMARY KEY,
         lottery_id INTEGER NOT NULL,
         days VARCHAR(16) NOT NULL,
-        hours VARCHAR(16) NOT NULL,
         FOREIGN KEY(lottery_id) REFERENCES lottery(id)
     );
+
+    INSERT INTO lottery (name) VALUES ('tris'), ('melate_retro');
+    INSERT INTO draw_schedule (lottery_id, days) VALUES (1, 'everyday'), (2, 'tue,sat');
 
 END;
