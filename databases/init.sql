@@ -1,7 +1,7 @@
 BEGIN TRANSACTION;
 
     DROP TABLE IF EXISTS lottery;
-    DROP TABLE IF EXISTS download_log;
+    DROP TABLE IF EXISTS draw;
     DROP TABLE IF EXISTS draw_schedule;
 
     PRAGMA foreign_keys = ON;
@@ -11,10 +11,16 @@ BEGIN TRANSACTION;
         name VARCHAR(32) NOT NULL
     );
 
-    CREATE TABLE download_log (
+    CREATE TABLE draw (
         id INTEGER PRIMARY KEY,
         lottery_id INTEGER NOT NULL,
-        downloaded_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        processed_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        n1 INTEGER NOT NULL,
+        n2 INTEGER NOT NULL,
+        n3 INTEGER NOT NULL,
+        n4 INTEGER NOT NULL,
+        n5 INTEGER NOT NULL,
+        n6 INTEGER NOT NULL,
         FOREIGN KEY(lottery_id) REFERENCES lottery(id)
     );
 
