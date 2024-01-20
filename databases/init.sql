@@ -14,13 +14,16 @@ BEGIN TRANSACTION;
     CREATE TABLE draw (
         id INTEGER PRIMARY KEY,
         lottery_id INTEGER NOT NULL,
+        number INTEGER NOT NULL,
+        r1 INTEGER NULL,
+        r2 INTEGER NULL,
+        r3 INTEGER NULL,
+        r4 INTEGER NULL,
+        r5 INTEGER NULL,
+        r6 INTEGER NULL,
+        r7 INTEGER NULL,
+        jackpot INTEGER NULL,
         processed_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        n1 INTEGER NOT NULL,
-        n2 INTEGER NOT NULL,
-        n3 INTEGER NOT NULL,
-        n4 INTEGER NOT NULL,
-        n5 INTEGER NOT NULL,
-        n6 INTEGER NOT NULL,
         FOREIGN KEY(lottery_id) REFERENCES lottery(id)
     );
 
@@ -32,6 +35,6 @@ BEGIN TRANSACTION;
     );
 
     INSERT INTO lottery (name) VALUES ('tris'), ('melate_retro');
-    INSERT INTO draw_schedule (lottery_id, days) VALUES (1, 'everyday'), (2, 'tue,sat');
+    INSERT INTO draw_schedule (lottery_id, days) VALUES (60, 'everyday'), (40, 'tue,sat');
 
 END;
