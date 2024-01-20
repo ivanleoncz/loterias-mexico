@@ -35,6 +35,6 @@ BEGIN TRANSACTION;
     );
 
     INSERT INTO lottery (name) VALUES ('tris'), ('melate_retro');
-    INSERT INTO draw_schedule (lottery_id, days) VALUES (60, 'everyday'), (40, 'tue,sat');
+    INSERT INTO draw_schedule (lottery_id, days) VALUES (60, 'everyday'), (30, 'tue,sat');
 
 END;
