@@ -34,7 +34,7 @@ BEGIN TRANSACTION;
         FOREIGN KEY(lottery_id) REFERENCES lottery(id)
     );
 
-    INSERT INTO lottery (name) VALUES ('tris'), ('melate_retro');
+    INSERT INTO lottery (id, name) VALUES (60, 'tris'), (30, 'melate_retro');
     INSERT INTO draw_schedule (lottery_id, days) VALUES (60, 'everyday'), (30, 'tue,sat');
 
 END;
