@@ -5,7 +5,7 @@ import os
 from dotenv import load_dotenv
 import pandas as pd
 
-from modules.etl import download_dataset
+from modules.etl import ETL
 from modules.data_processing import (prepare_dataframe_tris, prepare_dataframe_melate_retro, filter_dataframe_by_year,
                                      get_probability_of_numbers_per_column, get_probability_of_numbers_in_all_columns,
                                      plot_probabilities, count_winning_numbers)
@@ -33,11 +33,13 @@ if __name__ == "__main__":
 
     if args.type:
 
+        etl = ETL()
+
         if args.download:
             if args.type == 'tris':
-                download_dataset(os.environ["LOTERIA_NACIONAL_URL_TRIS"], args.type)
+                etl.download(lottery_id=os.environ["LOTERIA_NACIONAL_ID_TRIS"])
             elif args.type == 'melate_retro':
-                download_dataset(os.environ["LOTERIA_NACIONAL_URL_MELATE_RETRO"], args.type)
+                etl.download(lottery_id=os.environ["LOTERIA_NACIONAL_ID_MELATE_RETRO"])
         else:
             df = None
             if args.type == 'tris':
