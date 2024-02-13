@@ -59,20 +59,19 @@ class ETL:
         line : lottery draw as list, with numbers and other draw related data.
         lottery_id : used for conditioning the database query
         """
-        # TODO: must add draw date on the queries... datetime.strptime(...)
         if lottery_id == os.environ["LOTERIA_NACIONAL_ID_TRIS"]:
             self.db.cur.execute("""
-                        INSERT INTO draw (lottery_id, number, r1, r2, r3, r4, r5)
-                        VALUES (?, ?, ?, ?, ?, ?, ?)""",
+                        INSERT INTO draw (lottery_id, number, r1, r2, r3, r4, r5, processed_at)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
                                 (int(line[0]), int(line[1]), int(line[2]), int(line[3]),
-                                 int(line[4]), int(line[5]), int(line[6])))
+                                 int(line[4]), int(line[5]), int(line[6]), line[7]))
         else:
             self.db.cur.execute("""
-                        INSERT INTO draw (lottery_id, number, r1, r2, r3, r4, r5, r6, r7, jackpot)
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                        INSERT INTO draw (lottery_id, number, r1, r2, r3, r4, r5, r6, r7, jackpot, processed_at)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
                                 (int(line[0]), int(line[1]), int(line[2]), int(line[3]),
                                  int(line[4]), int(line[5]), int(line[6]), int(line[7]),
-                                 int(line[8])))
+                                 int(line[8]), int(line[9], line[10])))
 
     def update_lottery_dataset(self, request, lottery_id, dataset_file) -> None:
         """
