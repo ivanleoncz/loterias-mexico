@@ -1,3 +1,4 @@
+from datetime import datetime
 import os
 import random
 
@@ -27,6 +28,28 @@ class ETL:
         """
         return self.db.cur.execute("SELECT number FROM draw WHERE lottery_id = ? ",
                                    (product, )).fetchone()
+
+    def check_download_schedule_allowed(self, lottery: str) -> bool:
+        """
+        Determine if today is the day for downloading results for a specific lottery product.
+        """
+        today = datetime.now()
+        results = self.db.cur.execute("""
+            SELECT name, processed_at, available
+                FROM lottery
+                INNER JOIN draw ON draw.lottery_id = lottery.id
+                INNER JOIN schedule ON schedule.lottery_id = lottery.id
+                WHERE lottery.id = ? AND draw.processed_at = ?
+                ORDER BY draw.processed_at DESC""",
+                                      lottery, today.strftime("%Y/%m/%d")).fetchone()
+        if results and results[1] < datetime.now().date():
+            # Always download results from days before, only.
+            if lottery == os.environ["LOTERIA_NACIONAL_ID_TRIS"]:
+                return True
+            # Always download results from days before, if today is one of the available days.
+            elif lottery == os.environ["LOTERIA_NACIONAL_ID_MELATE_RETRO"] and today.strftime("%a") in results[2]:
+                return True
+            return False
 
     def download_page(self, url: str) -> requests:
         """
