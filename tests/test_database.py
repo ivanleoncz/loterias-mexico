@@ -8,6 +8,13 @@ from modules.utils import BASE_DIR
 
 
 class TestDatabase:
+    """
+    Testing database consistency, based on ETL processes, including web-scrapping against Github Gist files,
+    in order to avoid possible IP bans, due to subsequent testing executions. One Gist file contains the HTML
+    of Mexico's Loteria Nacional for Tris lottery product, with a link/button pointing to another Gist file,
+    which is the CSV dataset that contains a small set of draws, just as it happens when normally using the
+    original website, downloading lottery results.
+    """
 
     db = None
     database = "tests.db"
@@ -22,13 +29,20 @@ class TestDatabase:
         os.remove(os.path.join(BASE_DIR, "databases", cls.database))
 
     def test_init_db(self):
+        """
+        Tests database initialization.
+        """
         self.__class__.db.init_db()
         result = self.__class__.db.cur.execute(""" SELECT name FROM sqlite_master; """)
         assert len(result.fetchall()) == 3
 
-    def test_web_scrapping(self):
+    def test_etl(self):
+        """
+        Tests ETL processing, downloading data (web-scrapping) against Gist files
+        and loading the data into the database.
+        """
 
-        # Preparing environment variables
+        # Preparing environment variables, using URLs from Gist files (mocking web-scrapping).
         load_dotenv()
         os.environ["LOTERIA_NACIONAL_URL"] = "https://gist.githubusercontent.com/ivanleoncz/"
         os.environ["LOTERIA_NACIONAL_URL_TRIS"] = (
@@ -36,13 +50,15 @@ class TestDatabase:
                 "/f0bc20813ac7b44c83d110c853c2e282/raw/6e99b3fcbf50506e8f1210373464694af0427d22/"
                 "loteria_nacional_tris.html")
 
-        # Numbers taken from LOTERIA_NACIONAL_URL_TRIS dataset
-        lottery_initial_draw = 29873
-        lottery_gist_dataset_amount_of_draws = 1915
+        # From Gist file (LOTERIA_NACIONAL_URL_TRIS -> .csv)
+        # - first draw
+        gist_first_draw = 29873
+        # - amount of draws
+        gist_amount_of_draws = 1915
 
         # Insert draw data, faking as it was the latest draw data available on the database
         self.db.cur.execute("""INSERT INTO draw (lottery_id, number, r1, r2, r3, r4, r5)
-                               VALUES (?, ?, ?, ?, ?, ?, ?)""", (60, lottery_initial_draw, 0, 9, 9, 2, 3))
+                               VALUES (?, ?, ?, ?, ?, ?, ?)""", (60, gist_first_draw, 0, 9, 9, 2, 3))
 
         # Test presence of the last draw
         db_result = self.db.cur.execute("""SELECT * FROM draw""").fetchall()
@@ -51,9 +67,12 @@ class TestDatabase:
         # Test ETL process (ensure equality between dataset draws and database)
         etl = ETL(self.db)
         etl.download(lottery_id=os.environ["LOTERIA_NACIONAL_ID_TRIS"])
-        assert len(self.db.cur.execute("""SELECT * FROM draw""").fetchall()) == lottery_gist_dataset_amount_of_draws
+        assert len(self.db.cur.execute("""SELECT * FROM draw""").fetchall()) == gist_amount_of_draws
 
     def test_drop_db(self):
+        """
+        Tests database drop method: its regular use is not expected, even though the function exists.
+        """
         self.__class__.db.drop_db()
         result = self.__class__.db.cur.execute(""" SELECT name FROM sqlite_master; """)
         assert len(result.fetchall()) == 0
