@@ -2,7 +2,7 @@ BEGIN TRANSACTION;
 
     DROP TABLE IF EXISTS lottery;
     DROP TABLE IF EXISTS draw;
-    DROP TABLE IF EXISTS draw_schedule;
+    DROP TABLE IF EXISTS schedule;
 
     PRAGMA foreign_keys = ON;
 
@@ -27,14 +27,14 @@ BEGIN TRANSACTION;
         FOREIGN KEY(lottery_id) REFERENCES lottery(id)
     );
 
-    CREATE TABLE draw_schedule (
+    CREATE TABLE schedule (
         id INTEGER PRIMARY KEY,
         lottery_id INTEGER NOT NULL,
-        days VARCHAR(16) NOT NULL,
+        available_on VARCHAR(16) NOT NULL,
         FOREIGN KEY(lottery_id) REFERENCES lottery(id)
     );
 
     INSERT INTO lottery (id, name) VALUES (60, 'tris'), (30, 'melate_retro');
-    INSERT INTO draw_schedule (lottery_id, days) VALUES (60, 'everyday'), (30, 'tue,sat');
+    INSERT INTO schedule (lottery_id, available_on) VALUES (60, 'Mon,Tue,Wed,Thu,Fri,Sat,Sun'), (30, 'Wed,Sun');
 
 END;

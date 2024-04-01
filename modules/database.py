@@ -25,6 +25,6 @@ class Database:
         BEGIN TRANSACTION;
             DROP TABLE IF EXISTS lottery;
             DROP TABLE IF EXISTS draw;
-            DROP TABLE IF EXISTS draw_schedule;
+            DROP TABLE IF EXISTS schedule;
         END;
         """)
