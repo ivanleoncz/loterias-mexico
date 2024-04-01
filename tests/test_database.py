@@ -10,10 +10,13 @@ from modules.utils import BASE_DIR
 class TestDatabase:
     """
     Testing database consistency, based on ETL processes, including web-scrapping against Github Gist files,
-    in order to avoid possible IP bans, due to subsequent testing executions. One Gist file contains the HTML
-    of Mexico's Loteria Nacional for Tris lottery product, with a link/button pointing to another Gist file,
-    which is the CSV dataset that contains a small set of draws, just as it happens when normally using the
-    original website, downloading lottery results.
+    in order to avoid possible IP bans, due to subsequent testing executions.
+
+    Two Gist files are used on these tests, in order to not use Mexico's Loteria Nacional service, avoiding a possible
+    IP ban, in case that too much tests (requests) are executed: one Gist contains the HTML code of Mexico's Loteria
+    Nacional for "Tris" lottery product, with a link/button pointing to ANOTHER Gist file, which is the CSV dataset that
+    contains a small set of draws, just as it happens when normally using the original website, downloading lottery
+    results.
     """
 
     db = None
