@@ -21,6 +21,11 @@ class Database:
             self.cur.executescript(queries)
 
     def drop_db(self):
+        """
+        Drops database table.
+
+        Watch out with the definitions at init.sql, or else, this code will break.
+        """
         self.cur.executescript("""
         BEGIN TRANSACTION;
             DROP TABLE IF EXISTS lottery;
