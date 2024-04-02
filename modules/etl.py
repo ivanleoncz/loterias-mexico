@@ -51,13 +51,6 @@ class ETL:
                 return True
             return False
 
-    def download_page(self, url: str) -> requests:
-        """
-        Downloads the HTML page which contains the link for the dataset.
-        """
-        request = requests.get(url, headers=self.headers, verify=False)
-        return request
-
     @staticmethod
     def get_dataset_url(html_content: str) -> str:
         """
@@ -139,9 +132,9 @@ class ETL:
             lottery_url=os.environ["LOTERIA_NACIONAL_URL_MELATE_RETRO"]
             lottery_dataset = os.environ["DATASET_PATH_MELATE_RETRO"]
 
-        lottery_page = self.download_page(lottery_url)
+        lottery_page = requests.get(url=lottery_url, headers=self.headers, verify=False)
         dataset_url = self.get_dataset_url(lottery_page.text)
-        # TODO: this could be handle with download_page, but passing parameters
-        request = requests.get(dataset_url, stream=True, headers=self.headers, allow_redirects=True, verify=False)
-        self.update_lottery_dataset(request, lottery_id, lottery_dataset)
-        request.close()
+        lottery_dataset_request = requests.get(url=dataset_url, headers=self.headers, verify=False, stream=True,
+                                               allow_redirects=True )
+        self.update_lottery_dataset(lottery_dataset_request, lottery_id, lottery_dataset)
+        lottery_dataset_request.close()
