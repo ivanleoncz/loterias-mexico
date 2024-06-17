@@ -1,4 +1,3 @@
-import os.path
 from os.path import join as path_join
 import sqlite3
 
@@ -11,16 +10,10 @@ class Database:
     __database_name = "production.db"
 
     def __init__(self, database: str = __database_name):
-        print("Base DIR: ", BASE_DIR)
-        print("Exists:   ", os.path.exists(BASE_DIR))
         self.db_path = path_join(BASE_DIR, "databases", database)
-        print("Database path: ", self.db_path)
-
         self.con = sqlite3.connect(self.db_path)
         self.cur = self.con.cursor()
-        # status: not tested
         if not self.database_tables_present():
-            print("Initialize database...")
             self.init_db()
 
     def init_db(self) -> None:
@@ -38,8 +31,6 @@ class Database:
     def database_tables_present(self) -> bool:
         """
         Check if required database tables are present ot not.
-
-        status: not tested
         """
         database_tables = self.cur.execute("""SELECT name FROM sqlite_master""").fetchall()
         if database_tables:
