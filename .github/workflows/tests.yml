@@ -9,4 +9,6 @@ jobs:
         with:
           python-version: '3.8'
       - run: pip install -r requirements.txt
-      - run: pytest -s
+      - run: pytest -s .
+permissions:
+  contents: write
