@@ -11,10 +11,12 @@ class Database:
 
     def __init__(self, database: str = __database_name):
         self.db_path = path_join(BASE_DIR, "databases", database)
+        print("Database path: ", self.db_path)
         self.con = sqlite3.connect(self.db_path)
         self.cur = self.con.cursor()
         # status: not tested
         if not self.database_tables_present():
+            print("Initialize database...")
             self.init_db()
 
     def init_db(self) -> None:
