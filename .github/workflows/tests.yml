@@ -2,11 +2,11 @@ name: Tests
 on: [pull_request, push]
 jobs:
   test_project:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v4
         with:
           python-version: '3.8'
       - run: pip install -r requirements.txt
-      - run: pytest -s .
+      - run: pytest -s
