@@ -45,6 +45,10 @@ class TestDatabase:
         and loading the data into the database.
         """
 
+        # From Gist file (LOTERIA_NACIONAL_URL_TRIS -> .csv)
+        gist_first_draw = 29873  # last record
+        gist_amount_of_draws = 1915  # counting the last record
+
         # Preparing environment variables, using URLs from Gist files (mocking web-scrapping).
         load_dotenv()
         os.environ["LOTERIA_NACIONAL_URL"] = "https://gist.githubusercontent.com/ivanleoncz/"
@@ -53,21 +57,14 @@ class TestDatabase:
                 "/f0bc20813ac7b44c83d110c853c2e282/raw/6e99b3fcbf50506e8f1210373464694af0427d22/"
                 "loteria_nacional_tris.html")
 
-        # From Gist file (LOTERIA_NACIONAL_URL_TRIS -> .csv)
-        # - first draw
-        gist_first_draw = 29873
-        # - amount of draws
-        gist_amount_of_draws = 1915
-
         # Insert draw data, faking as it was the latest draw data available on the database
         self.db.cur.execute("""INSERT INTO draw (lottery_id, number, r1, r2, r3, r4, r5)
                                VALUES (?, ?, ?, ?, ?, ?, ?)""", (60, gist_first_draw, 0, 9, 9, 2, 3))
 
         # Test presence of the last draw
-        db_result = self.db.cur.execute("""SELECT * FROM draw""").fetchall()
-        assert len(db_result) == 1
+        assert len(self.db.cur.execute("""SELECT * FROM draw""").fetchall()) == 1
 
-        # Test ETL process (ensure equality between dataset draws and database)
+        # Test draws database update via ETL process, ensuring equality between dataset and database
         etl = ETL(self.db)
         etl.download(lottery_id=os.environ["LOTERIA_NACIONAL_ID_TRIS"])
         assert len(self.db.cur.execute("""SELECT * FROM draw""").fetchall()) == gist_amount_of_draws

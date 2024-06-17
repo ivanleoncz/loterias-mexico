@@ -2,34 +2,40 @@ from os.path import join as path_join
 import sqlite3
 
 from .utils import BASE_DIR
+from . import script_db_init, script_db_drop
 
 
 class Database:
 
     __database_name = "production.db"
-    __database_init = "init.sql"
 
     def __init__(self, database: str = __database_name):
         self.db_path = path_join(BASE_DIR, "databases", database)
         self.con = sqlite3.connect(self.db_path)
         self.cur = self.con.cursor()
+        # status: not tested
+        if not self.database_tables_present():
+            self.init_db()
 
     def init_db(self) -> None:
-        init_file = path_join(BASE_DIR, "databases", self.__database_init)
-        with open(init_file, "r") as f:
-            queries = f.read()
-            self.cur.executescript(queries)
+        """
+        Creates the necessary database tables. See modules/__init__.py for more information.
+        """
+        self.cur.executescript(script_db_init)
 
     def drop_db(self):
         """
-        Drops database table.
-
-        Watch out with the definitions at init.sql, or else, this code will break.
+        Creates the necessary database tables. See modules/__init__.py for more information.
         """
-        self.cur.executescript("""
-        BEGIN TRANSACTION;
-            DROP TABLE IF EXISTS lottery;
-            DROP TABLE IF EXISTS draw;
-            DROP TABLE IF EXISTS schedule;
-        END;
-        """)
+        self.cur.executescript(script_db_drop)
+
+    def database_tables_present(self) -> bool:
+        """
+        Check if required database tables are present ot not.
+
+        status: not tested
+        """
+        database_tables = self.cur.execute("""SELECT name FROM sqlite_master""").fetchall()
+        if database_tables:
+            return True
+        return False
