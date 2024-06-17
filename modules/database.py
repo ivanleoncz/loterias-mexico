@@ -1,3 +1,4 @@
+import os.path
 from os.path import join as path_join
 import sqlite3
 
@@ -10,8 +11,11 @@ class Database:
     __database_name = "production.db"
 
     def __init__(self, database: str = __database_name):
+        print("Base DIR: ", BASE_DIR)
+        print("Exists:   ", os.path.exists(BASE_DIR))
         self.db_path = path_join(BASE_DIR, "databases", database)
-        print("\nDatabase path: ", self.db_path)
+        print("Database path: ", self.db_path)
+
         self.con = sqlite3.connect(self.db_path)
         self.cur = self.con.cursor()
         # status: not tested
