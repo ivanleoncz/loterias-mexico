@@ -30,30 +30,6 @@ class LotteryETL:
         return self.db.cur.execute(f"""SELECT number FROM {TABLE_DRAW} 
             WHERE lottery_id = ? ORDER BY number DESC LIMIT 1""", (product, )).fetchone()
 
-    def check_download_schedule_allowed(self, lottery: str) -> bool:
-        """
-        Determine if today is the day for downloading results for a specific lottery product.
-
-        status: not tested
-        """
-        today = datetime.now()
-        results = self.db.cur.execute(f"""
-            SELECT processed_at, available
-                FROM lottery
-                INNER JOIN {TABLE_DRAW} ON {TABLE_DRAW}.lottery_id = lottery.id
-                INNER JOIN {TABLE_SCHEDULE} ON {TABLE_SCHEDULE}.lottery_id = lottery.id
-                WHERE lottery.id = ? AND {TABLE_DRAW}.processed_at = ?
-                ORDER BY draw.processed_at DESC""",
-                                      lottery, today.strftime("%Y/%m/%d")).fetchone()
-        if results and results[0] < datetime.now().date():
-            # Always download results from days before, only.
-            if lottery == ID_TRIS:
-                return True
-            # Always download results from days before, if today is one of the available days.
-            elif lottery == ID_MELATE_RETRO and today.strftime("%a") in results[1]:
-                return True
-            return False
-
     @staticmethod
     def get_dataset_url(html_content: str) -> str:
         """
