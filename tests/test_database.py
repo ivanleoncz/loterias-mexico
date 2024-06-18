@@ -34,7 +34,7 @@ class TestDatabase:
         """
         Tests database initialization.
         """
-        assert len(self.__class__.db.cur.execute(""" SELECT name FROM sqlite_master; """).fetchall()) == 3
+        assert len(self.__class__.db.cur.execute(""" SELECT name FROM sqlite_master; """).fetchall()) == 2
 
     def test_etl(self):
         """
