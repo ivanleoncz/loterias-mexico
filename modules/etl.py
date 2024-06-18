@@ -1,14 +1,13 @@
 from datetime import datetime
-import os
 import random
 
 from bs4 import BeautifulSoup
 import requests
 
-from . import TABLE_DRAW, TABLE_SCHEDULE
+from . import TABLE_DRAW, TABLE_SCHEDULE, ID_TRIS, ID_MELATE_RETRO, BUTTON_TEXT
 
 
-class ETL:
+class LotteryETL:
 
     # List of UAs to be randomly used, in order to make the request more "legit" on the eyes of the webserver.
     user_agents = [
@@ -28,9 +27,8 @@ class ETL:
         """
         Get the last draw of Mexico's Loteria Nacional product.
         """
-        return self.db.cur.execute(
-            f"""SELECT number FROM {TABLE_DRAW} WHERE lottery_id = ? ORDER BY number DESC LIMIT 1""",
-                                   (product, )).fetchone()
+        return self.db.cur.execute(f"""SELECT number FROM {TABLE_DRAW} 
+            WHERE lottery_id = ? ORDER BY number DESC LIMIT 1""", (product, )).fetchone()
 
     def check_download_schedule_allowed(self, lottery: str) -> bool:
         """
@@ -49,10 +47,10 @@ class ETL:
                                       lottery, today.strftime("%Y/%m/%d")).fetchone()
         if results and results[0] < datetime.now().date():
             # Always download results from days before, only.
-            if lottery == os.environ["LOTERIA_NACIONAL_ID_TRIS"]:
+            if lottery == ID_TRIS:
                 return True
             # Always download results from days before, if today is one of the available days.
-            elif lottery == os.environ["LOTERIA_NACIONAL_ID_MELATE_RETRO"] and today.strftime("%a") in results[1]:
+            elif lottery == ID_MELATE_RETRO and today.strftime("%a") in results[1]:
                 return True
             return False
 
@@ -66,10 +64,10 @@ class ETL:
         html_content : html body, previously downloaded via request to lottery service URL
         """
         links = BeautifulSoup(html_content, 'html.parser').find_all('a')
-        # Transforming URL with double dot notation.
-        url = [os.environ["LOTERIA_NACIONAL_URL"] + a["href"].split('..')[-1]
-               for a in links if os.environ["BUTTON_TEXT"] in a.get_text()][0]
-        return url
+        for a in links:
+            if BUTTON_TEXT in a.get_text():
+                return a["href"].split('..')[-1]
+        return ""
 
     def update_lottery_database(self, line: list, lottery_id: str) -> None:
         """
@@ -80,7 +78,7 @@ class ETL:
         line : lottery draw as list, with numbers and other draw related data.
         lottery_id : used for conditioning the database query
         """
-        if lottery_id == os.environ["LOTERIA_NACIONAL_ID_TRIS"]:
+        if lottery_id == ID_TRIS:
             self.db.cur.execute(f"""
                         INSERT INTO {TABLE_DRAW} (lottery_id, number, r1, r2, r3, r4, r5, processed_at)
                         VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
@@ -120,7 +118,7 @@ class ETL:
                         if not last_draw or int(last_draw[0]) < int(line[1]):
                             self.update_lottery_database(line, lottery_id)
 
-    def download(self, lottery_id) -> None:
+    def download(self, lottery_id, lottery_website, lottery_url, lottery_dataset) -> None:
         """
         Performs web-scrapping over Mexico's Loteria Nacional website, downloading draw results
         for a particular lottery product.
@@ -128,17 +126,12 @@ class ETL:
         Parameters
         ----------
         lottery_id : ID of the lottery product
+        lottery_website : website for the lottery service (could be a mocked URL for testing)
+        lottery_url : URL for scrapping the URL of the dataset
+        lottery_dataset: filesystem path for storing the dataset
         """
-        lottery_url = lottery_dataset = None
-        if lottery_id == os.environ["LOTERIA_NACIONAL_ID_TRIS"]:
-            lottery_url = os.environ["LOTERIA_NACIONAL_URL_TRIS"]
-            lottery_dataset = os.environ["DATASET_PATH_TRIS"]
-        elif lottery_id == os.environ["LOTERIA_NACIONAL_ID_MELATE_RETRO"]:
-            lottery_url=os.environ["LOTERIA_NACIONAL_URL_MELATE_RETRO"]
-            lottery_dataset = os.environ["DATASET_PATH_MELATE_RETRO"]
-
         website = requests.get(url=lottery_url, verify=False, headers=self.headers)
-        dataset_url = self.get_dataset_url(website.text)
+        dataset_url = lottery_website + self.get_dataset_url(website.text)
         dataset_request = requests.get(url=dataset_url, verify=False, headers=self.headers, stream=True,
                                        allow_redirects=True)
         self.update_lottery_data(dataset_request, lottery_id, lottery_dataset)

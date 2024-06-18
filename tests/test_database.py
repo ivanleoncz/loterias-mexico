@@ -1,9 +1,8 @@
 import os
 
-from dotenv import load_dotenv
-
+from modules import ID_TRIS, DATASET_TRIS
 from modules.database import Database
-from modules.etl import ETL
+from modules.etl import LotteryETL
 from modules.utils import BASE_DIR
 
 
@@ -48,12 +47,9 @@ class TestDatabase:
         gist_amount_of_draws = 1915  # counting the last record
 
         # Preparing environment variables, using URLs from Gist files (mocking web-scrapping).
-        load_dotenv()
-        os.environ["LOTERIA_NACIONAL_URL"] = "https://gist.githubusercontent.com/ivanleoncz/"
-        os.environ["LOTERIA_NACIONAL_URL_TRIS"] = (
-                f"{os.environ['LOTERIA_NACIONAL_URL']}" +
-                "/f0bc20813ac7b44c83d110c853c2e282/raw/6e99b3fcbf50506e8f1210373464694af0427d22/"
-                "loteria_nacional_tris.html")
+        website = "https://gist.githubusercontent.com/ivanleoncz/"
+        website_url = (website + "f0bc20813ac7b44c83d110c853c2e282/raw/"
+                                 "6e99b3fcbf50506e8f1210373464694af0427d22/loteria_nacional_tris.html")
 
         # Insert draw data, faking as it was the latest draw data available on the database
         self.db.cur.execute("""INSERT INTO draw (lottery_id, number, r1, r2, r3, r4, r5)
@@ -63,8 +59,9 @@ class TestDatabase:
         assert len(self.db.cur.execute("""SELECT * FROM draw""").fetchall()) == 1
 
         # Test draws database update via ETL process, ensuring equality between dataset and database
-        etl = ETL(self.db)
-        etl.download(lottery_id=os.environ["LOTERIA_NACIONAL_ID_TRIS"])
+        etl = LotteryETL(self.db)
+        etl.download(lottery_id=ID_TRIS, lottery_website=website, lottery_url=website_url,
+                     lottery_dataset=DATASET_TRIS)
         assert len(self.db.cur.execute("""SELECT * FROM draw""").fetchall()) == gist_amount_of_draws
 
     def test_drop_db(self):

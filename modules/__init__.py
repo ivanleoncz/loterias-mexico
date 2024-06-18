@@ -1,3 +1,13 @@
+BUTTON_TEXT = "resultados anteriores"
+DATASET_DIR = "datasets"
+DATASET_TRIS = f"{DATASET_DIR}/Tris.csv"
+DATASET_MELATE_RETRO = f"{DATASET_DIR}/MelateRetro.csv"
+URL_DOMAIN = "https://loterianacional.gob.mx"
+URL_TRIS = f"{URL_DOMAIN}/Tris/Resultados"
+URL_MELATE_RETRO = f"{URL_DOMAIN}/MelateRetro/Resultados"
+ID_TRIS = 60
+ID_MELATE_RETRO = 30
+
 TABLE_LOTTERY = "lottery"
 TABLE_DRAW = "draw"
 TABLE_SCHEDULE = "schedule"
