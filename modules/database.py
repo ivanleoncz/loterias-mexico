@@ -2,7 +2,7 @@ from os.path import join as path_join
 import sqlite3
 
 from .utils import BASE_DIR
-from . import script_db_init, script_db_drop
+from . import SQL_SCRIPT_DB_INIT, SQL_SCRIPT_DB_DROP
 
 
 class Database:
@@ -20,13 +20,13 @@ class Database:
         """
         Creates the necessary database tables. See modules/__init__.py for more information.
         """
-        self.cur.executescript(script_db_init)
+        self.cur.executescript(SQL_SCRIPT_DB_INIT)
 
     def drop_db(self):
         """
         Creates the necessary database tables. See modules/__init__.py for more information.
         """
-        self.cur.executescript(script_db_drop)
+        self.cur.executescript(SQL_SCRIPT_DB_DROP)
 
     def database_tables_present(self) -> bool:
         """

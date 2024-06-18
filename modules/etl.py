@@ -5,7 +5,7 @@ import random
 from bs4 import BeautifulSoup
 import requests
 
-from . import draw_table, schedule_table
+from . import TABLE_DRAW, TABLE_SCHEDULE
 
 
 class ETL:
@@ -29,7 +29,7 @@ class ETL:
         Get the last draw of Mexico's Loteria Nacional product.
         """
         return self.db.cur.execute(
-            f"""SELECT number FROM {draw_table} WHERE lottery_id = ? ORDER BY number DESC LIMIT 1""",
+            f"""SELECT number FROM {TABLE_DRAW} WHERE lottery_id = ? ORDER BY number DESC LIMIT 1""",
                                    (product, )).fetchone()
 
     def check_download_schedule_allowed(self, lottery: str) -> bool:
@@ -42,9 +42,9 @@ class ETL:
         results = self.db.cur.execute(f"""
             SELECT processed_at, available
                 FROM lottery
-                INNER JOIN {draw_table} ON {draw_table}.lottery_id = lottery.id
-                INNER JOIN {schedule_table} ON {schedule_table}.lottery_id = lottery.id
-                WHERE lottery.id = ? AND {draw_table}.processed_at = ?
+                INNER JOIN {TABLE_DRAW} ON {TABLE_DRAW}.lottery_id = lottery.id
+                INNER JOIN {TABLE_SCHEDULE} ON {TABLE_SCHEDULE}.lottery_id = lottery.id
+                WHERE lottery.id = ? AND {TABLE_DRAW}.processed_at = ?
                 ORDER BY draw.processed_at DESC""",
                                       lottery, today.strftime("%Y/%m/%d")).fetchone()
         if results and results[0] < datetime.now().date():
@@ -82,13 +82,13 @@ class ETL:
         """
         if lottery_id == os.environ["LOTERIA_NACIONAL_ID_TRIS"]:
             self.db.cur.execute(f"""
-                        INSERT INTO {draw_table} (lottery_id, number, r1, r2, r3, r4, r5, processed_at)
+                        INSERT INTO {TABLE_DRAW} (lottery_id, number, r1, r2, r3, r4, r5, processed_at)
                         VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
                                 (line[0], line[1], line[2], line[3],
                                  line[4], line[5], line[6], line[7]))
         else:
             self.db.cur.execute(f"""
-                        INSERT INTO {draw_table} (lottery_id, number, r1, r2, r3, r4, r5, r6, r7, jackpot, processed_at)
+                        INSERT INTO {TABLE_DRAW} (lottery_id, number, r1, r2, r3, r4, r5, r6, r7, jackpot, processed_at)
                         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
                                 (int(line[0]), int(line[1]), int(line[2]), int(line[3]),
                                  int(line[4]), int(line[5]), int(line[6]), int(line[7]),
