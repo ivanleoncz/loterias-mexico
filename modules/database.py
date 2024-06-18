@@ -1,7 +1,7 @@
 from os.path import join as path_join
 import sqlite3
 
-from .utils import BASE_DIR
+from . import BASE_DIR
 from . import SQL_SCRIPT_DB_INIT, SQL_SCRIPT_DB_DROP
 
 

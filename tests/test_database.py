@@ -1,9 +1,9 @@
 import os
 
+from modules import BASE_DIR
 from modules import ID_TRIS, DATASET_TRIS
 from modules.database import Database
 from modules.etl import LotteryETL
-from modules.utils import BASE_DIR
 
 
 class TestDatabase:
