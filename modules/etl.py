@@ -1,10 +1,9 @@
-from datetime import datetime
 import random
 
 from bs4 import BeautifulSoup
 import requests
 
-from . import TABLE_DRAW, TABLE_SCHEDULE, ID_TRIS, ID_MELATE_RETRO, BUTTON_TEXT
+from . import TABLE_DRAW, ID_TRIS, BUTTON_TEXT
 
 
 class LotteryETL:
