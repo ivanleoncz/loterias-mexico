@@ -26,7 +26,7 @@ class LotteryETL:
         """
         Get the last draw of Mexico's Loteria Nacional product.
         """
-        return self.db.cur.execute(f"""SELECT number FROM {TABLE_DRAW} 
+        return self.db.cur.execute(f"""SELECT number, processed_at FROM {TABLE_DRAW}
             WHERE lottery_id = ? ORDER BY number DESC LIMIT 1""", (product, )).fetchone()
 
     @staticmethod
@@ -55,13 +55,13 @@ class LotteryETL:
         """
         if lottery_id == ID_TRIS:
             self.db.cur.execute(f"""
-                        INSERT INTO {TABLE_DRAW} (lottery_id, number, r1, r2, r3, r4, r5, processed_at)
+                        INSERT INTO {TABLE_DRAW} (lottery_id, number, r1, r2, r3, r4, r5, draw_day)
                         VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
                                 (line[0], line[1], line[2], line[3],
                                  line[4], line[5], line[6], line[7]))
         else:
             self.db.cur.execute(f"""
-                        INSERT INTO {TABLE_DRAW} (lottery_id, number, r1, r2, r3, r4, r5, r6, r7, jackpot, processed_at)
+                        INSERT INTO {TABLE_DRAW} (lottery_id, number, r1, r2, r3, r4, r5, r6, r7, jackpot, draw_day)
                         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
                                 (int(line[0]), int(line[1]), int(line[2]), int(line[3]),
                                  int(line[4]), int(line[5]), int(line[6]), int(line[7]),

@@ -39,6 +39,7 @@ BEGIN TRANSACTION;
         r6 INTEGER NULL,
         r7 INTEGER NULL,
         jackpot INTEGER NULL,
+        draw_day DATETIME,
         processed_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY(lottery_id) REFERENCES lottery(id)
     );
