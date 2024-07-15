@@ -1,7 +1,7 @@
 import os
 
 from modules import BASE_DIR
-from modules import ID_TRIS, DATASET_TRIS
+from modules import ID_TRIS
 from modules.database import Database
 from modules.etl import LotteryETL
 
@@ -51,6 +51,8 @@ class TestDatabase:
         website_url = (website + "f0bc20813ac7b44c83d110c853c2e282/raw/"
                                  "6e99b3fcbf50506e8f1210373464694af0427d22/loteria_nacional_tris.html")
 
+        dataset_file_download_test = "Tris_test.csv"
+
         # Insert draw data, faking as it was the latest draw data available on the database
         self.db.cur.execute("""INSERT INTO draw (lottery_id, number, r1, r2, r3, r4, r5)
                                VALUES (?, ?, ?, ?, ?, ?, ?)""", (60, gist_first_draw, 0, 9, 9, 2, 3))
@@ -61,8 +63,9 @@ class TestDatabase:
         # Test draws database update via ETL process, ensuring equality between dataset and database
         etl = LotteryETL(self.db)
         etl.download(lottery_id=ID_TRIS, lottery_website=website, lottery_url=website_url,
-                     lottery_dataset=DATASET_TRIS)
+                     lottery_dataset=dataset_file_download_test)
         assert len(self.db.cur.execute("""SELECT * FROM draw""").fetchall()) == gist_amount_of_draws
+        os.remove(dataset_file_download_test)
 
     def test_drop_db(self):
         """
