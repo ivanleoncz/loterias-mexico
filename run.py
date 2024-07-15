@@ -1,8 +1,5 @@
 import argparse
 from datetime import datetime
-import json
-
-import pandas as pd
 
 from modules import (DATASET_TRIS, DATASET_MELATE_RETRO, URL_TRIS, ID_TRIS, ID_MELATE_RETRO, URL_MELATE_RETRO,
                      URL_DOMAIN)
