@@ -40,17 +40,15 @@ if __name__ == "__main__":
 
         if args.download:
             if args.type == 'tris':
-                last_draw = etl.get_last_draw(DATASET_TRIS)
-                # FIXME: this condition is not working...
-                if not last_draw or datetime.strptime(last_draw[0], __format="%Y-%m-%d %H:%M:%S") < datetime.now():
+                last_draw = etl.get_last_draw(ID_TRIS)
+                if not last_draw or datetime.strptime(last_draw[1], "%Y-%m-%d %H:%M:%S").date() < datetime.now().date():
                     etl.download(lottery_id=ID_TRIS, lottery_website=URL_DOMAIN, lottery_url=URL_TRIS,
                                  lottery_dataset=DATASET_TRIS)
                 else:
                     print("INFO: TRIS results already downloaded today!")
             elif args.type == 'melate_retro':
-                last_draw = etl.get_last_draw(DATASET_MELATE_RETRO)
-                # FIXME: this condition is not working...
-                if not last_draw or datetime.strptime(last_draw[0], __format="%Y-%m-%d %H:%M:%S") < datetime.now():
+                last_draw = etl.get_last_draw(ID_MELATE_RETRO)
+                if not last_draw or datetime.strptime(last_draw[1], "%Y-%m-%d %H:%M:%S").date() < datetime.now().date():
                     etl.download(lottery_id=ID_MELATE_RETRO, lottery_website=URL_DOMAIN, lottery_url=URL_MELATE_RETRO,
                                  lottery_dataset=DATASET_MELATE_RETRO)
                 else:
